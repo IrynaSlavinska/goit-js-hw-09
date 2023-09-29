@@ -1,39 +1,63 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-const options = {
-  enableTime: true,
-  time_24hr: true,
-  defaultDate: new Date(),
-  minuteIncrement: 1,
-  onClose(selectedDates) {
-    console.log(selectedDates[0]);
-    startBtn.disabled = false;
-    // if (selectedDates < defaultDate) {
-    //   alert('Please choose a date in the future');
-    // } else {
-    // }
-  },
-};
-console.log(options);
-
-// Напиши скрипт таймера, який здійснює зворотний відлік до певної дати.
-// Такий таймер може використовуватися у блогах та інтернет - магазинах, сторінках реєстрації подій,
-// під час технічного обслуговування тощо.Подивися демо - відео роботи таймера.
-
 const chooseInput = document.querySelector('#datetime-picker');
 const startBtn = document.querySelector('[data-start]');
 const daysSpan = document.querySelector('[data-days]');
 const hoursSpan = document.querySelector('[data-hours]');
 const minutesSpan = document.querySelector('[data-minutes]');
 const secondsSpan = document.querySelector('[data-seconds]');
+let targetDate;
+let timerId = null;
+
+const options = {
+  enableTime: true,
+  time_24hr: true,
+  defaultDate: new Date(),
+  minuteIncrement: 1,
+  onClose(selectedDates) {
+    targetDate = selectedDates[0];
+    startBtn.disabled = false;
+  },
+};
 
 startBtn.disabled = true;
+startBtn.addEventListener('click', startHandle);
+chooseInput.addEventListener('input', inputDates);
 flatpickr(chooseInput, options);
 
-startBtn.addEventListener('click', startHandle);
+function inputDates() {
+  targetDate = chooseInput.value;
+  // console.log(targetDate);
+}
+inputDates();
 
-function startHandle() {}
+function startHandle() {
+  if (targetDate < options.defaultDate) {
+    alert('Please choose a date in the future');
+  }
+  id = setInterval(() => {
+    const currentDate = new Date();
+
+    const diffDates = targetDate - currentDate;
+    // console.log(diffDates);
+    const unixTime = convertMs(diffDates);
+
+    daysSpan.textContent = unixTime.days.toString().padStart(2, '0');
+    hoursSpan.textContent = unixTime.hours.toString().padStart(2, '0');
+    minutesSpan.textContent = unixTime.minutes.toString().padStart(2, '0');
+    secondsSpan.textContent = unixTime.seconds.toString().padStart(2, '0');
+
+    if (diffDates <= 100) {
+      clearInterval(id);
+      alert('Oooooooooooops!');
+      daysSpan.textContent = '00';
+      hoursSpan.textContent = '00';
+      minutesSpan.textContent = '00';
+      secondsSpan.textContent = '00';
+    }
+  }, 1000);
+}
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -53,19 +77,3 @@ function convertMs(ms) {
 
   return { days, hours, minutes, seconds };
 }
-
-let seconds = 350000000;
-const unixTime = convertMs(seconds);
-console.log(unixTime);
-
-daysSpan.textContent = unixTime.days;
-hoursSpan.textContent = unixTime.hours;
-minutesSpan.textContent = unixTime.minutes;
-secondsSpan.textContent = unixTime.seconds;
-
-// в seconds має записувати результат віднімання таргетДати і каррентДати
-// тоді ці секунди будуть йти аргуметом у виклик convertMs, який буде
-// конвертувати їх в unixTime
-//  вже з unixTime витягувати значення і записувати їх в спани
-
-// розібратись з тим, що має відбуватись в onClose(), каррент і таргет датами
