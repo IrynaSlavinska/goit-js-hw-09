@@ -36,7 +36,7 @@ function startHandle() {
   if (targetDate < options.defaultDate) {
     alert('Please choose a date in the future');
   }
-  id = setInterval(() => {
+  timerId = setInterval(() => {
     const currentDate = new Date();
 
     const diffDates = targetDate - currentDate;
@@ -49,12 +49,13 @@ function startHandle() {
     secondsSpan.textContent = unixTime.seconds.toString().padStart(2, '0');
 
     if (diffDates <= 100) {
-      clearInterval(id);
+      clearInterval(timerId);
       alert('Oooooooooooops!');
       daysSpan.textContent = '00';
       hoursSpan.textContent = '00';
       minutesSpan.textContent = '00';
       secondsSpan.textContent = '00';
+      
     }
   }, 1000);
 }
